@@ -8,12 +8,13 @@ import Winston from 'winston';
 export class MqttPublisher {
   private logger: Winston.Logger;
   private client: MqttClient;
-
+  private prefix: string;
   private connected = false;
 
-  constructor(logger: Winston.Logger, url: string) {
+  constructor(logger: Winston.Logger, url: string, prefix: string) {
     this.logger = logger;
     this.client = mqtt.connect(url);
+    this.prefix = prefix;
     this.client.on('connect', () => {
       this.logger.info('Connected to MQTT broker');
       this.connected = true;
@@ -31,7 +32,7 @@ export class MqttPublisher {
   ) {
     if (!this.connected) return;
 
-    const topic = `homeassistant/sensor/${deviceSlug}/${slug}/state`;
+    const topic = `${this.prefix}/sensor/${deviceSlug}/${slug}/state`;
     const payload = JSON.stringify({value: value ?? ''});
 
     this.client.publish(topic, payload, {retain: false}, err => {
@@ -61,7 +62,7 @@ export class MqttPublisher {
       value *= 1000;
     }
 
-    const topic = `homeassistant/sensor/${deviceSlug}/${slug}/state`;
+    const topic = `${this.prefix}/sensor/${deviceSlug}/${slug}/state`;
     const payload = JSON.stringify({
       value,
       unit_of_measurement: unit,
@@ -83,9 +84,9 @@ export class MqttPublisher {
     }
 
     const identifier = `${device.dev_model}_${device.dev_sn}`;
-    const configTopic = `homeassistant/sensor/${slug}/config`;
+    const configTopic = `${this.prefix}/sensor/${slug}/config`;
     const configPayload = JSON.stringify({
-      '~': `homeassistant/sensor/${slug}`,
+      '~': `${this.prefix}/sensor/${slug}`,
       name: `${device.dev_model} ${device.dev_sn}`,
       unique_id: slug.toLowerCase(),
       state_topic: '~/state',
@@ -122,7 +123,7 @@ export class MqttPublisher {
 
     const slug = deviceStatus.slug;
 
-    const configTopic = `homeassistant/sensor/${deviceSlug}/${slug}/config`;
+    const configTopic = `${this.prefix}/sensor/${deviceSlug}/${slug}/config`;
     const isTextSensor = isTextStatus(deviceStatus);
     const isNumeric = (n: number) => !isNaN(n) && isFinite(n);
     const valueTemplate = isNumeric(
@@ -133,7 +134,7 @@ export class MqttPublisher {
     const identifier = `${device.dev_model}_${device.dev_sn}`;
     const configPayload: ConfigPayload = {
       name: deviceStatus.name.trim(),
-      state_topic: `homeassistant/sensor/${deviceSlug}/${slug}/state`,
+      state_topic: `${this.prefix}/sensor/${deviceSlug}/${slug}/state`,
       unique_id: `${deviceSlug}_${slug}`.toLowerCase(),
       value_template: valueTemplate,
       device: {
