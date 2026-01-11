@@ -10,6 +10,7 @@ export const StateClasses: Record<string, string> = {
   A: 'measurement',
   '℃': 'measurement',
 };
+
 export const DeviceClasses: Record<string, string | undefined> = {
   W: 'power',
   V: 'voltage',
@@ -23,11 +24,6 @@ export const DeviceClasses: Record<string, string | undefined> = {
   '%': 'battery',
   kΩ: undefined,
 };
-
-export const TextSensors: string[] = [
-  'battery_operation_status',
-  'running_status',
-];
 
 export interface ConfigPayload {
   name: string;

@@ -10,6 +10,7 @@ const NumericUnits = [
   'Hz',
   'kVA',
   'kΩ',
+  'W',
 ];
 
 enum QueryStages {

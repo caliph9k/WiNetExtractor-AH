@@ -395,16 +395,16 @@ export class winetHandler {
         let mpptTotalW = 0;
         for (const data of directResult.data.list) {
           const names = data.name.split('%');
-          var name = this.properties[names[0]];
+          let name = this.properties[names[0]];
           if (!name) {
             name = data.name;
           }
 
-          var nameV = name + ' Voltage';
-          var nameA = name + ' Current';
-          var nameW = name + ' Power';
+          let nameV = name + ' Voltage';
+          let nameA = name + ' Current';
+          let nameW = name + ' Power';
 
-          if(names.length > 1) {
+          if (names.length > 1) {
             nameV = nameV.replace('{0}', names[1].replace('@', ''));
             nameA = nameA.replace('{0}', names[1].replace('@', ''));
             nameW = nameW.replace('{0}', names[1].replace('@', ''));
@@ -438,7 +438,10 @@ export class winetHandler {
             dirty: true,
           };
 
-          if (dataPointW.value !== undefined && dataPointW.name.toLowerCase().startsWith('mppt')) {
+          if (
+            dataPointW.value !== undefined &&
+            dataPointW.name.toLowerCase().startsWith('mppt')
+          ) {
             mpptTotalW += dataPointW.value as number;
           }
 

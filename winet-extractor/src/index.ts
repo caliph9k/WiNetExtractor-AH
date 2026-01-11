@@ -1,6 +1,7 @@
 import {getProperties} from './getProperties';
 import {winetHandler} from './winetHandler';
 import {MqttPublisher} from './homeassistant';
+import {isTextStatus, isNumericStatus} from './types/DeviceStatus';
 import Winston from 'winston';
 import fs from 'fs';
 import util from 'util';
@@ -96,15 +97,29 @@ winet.setCallback((devices, deviceStatus) => {
       const combinedSlug = `${deviceSlug}_${status.slug}`;
 
       if (!configuredSensors.includes(combinedSlug)) {
-        if (mqtt.publishConfig(deviceSlug, status, device)) {
+        if (
+          status.value !== undefined &&
+          mqtt.publishConfig(deviceSlug, status, device)
+        ) {
           logger.info(`Configured sensor: ${deviceSlug} ${status.slug}`);
           configuredSensors.push(combinedSlug);
           updatedSensorsConfig++;
+        } else {
+          logger.debug(`Invalid sensor state: ${deviceSlug} ${status.slug}`);
         }
       }
 
       if (status.dirty) {
-        mqtt.publishData(deviceSlug, status.slug, status.unit, status.value);
+        if (isNumericStatus(status)) {
+          mqtt.publishNumeric(
+            deviceSlug,
+            status.slug,
+            status.unit,
+            status.value
+          );
+        } else if (isTextStatus(status)) {
+          mqtt.publishText(deviceSlug, status.slug, status.value);
+        }
         status.dirty = false;
         updatedSensors++;
       }
@@ -121,7 +136,7 @@ winet.setCallback((devices, deviceStatus) => {
 
 getProperties(logger, options.winet_host, lang, options.ssl)
   .then(result => {
-    logger.info(`Fetched i18n properties.`);
+    logger.info('Fetched i18n properties.');
 
     winet.setProperties(result.properties);
     winet.connect(result.forceSsl);
