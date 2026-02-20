@@ -9,3 +9,4 @@ Addons:
 
 Customisation:
 - This fork of Nick Stallamn's winet-extractor is subtly modified to ensure it doesn't clash with existing App. This was done to allow a 2nd instance to run as a docker container in HomeAssistant, therefore giving me support for 2 inverters.
+- I downloaded this to the addons/local directory on HomeAssistant, and successfully built and used the 2nd instance.
