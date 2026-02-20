@@ -6,3 +6,6 @@ This repository contains my Home Assistant Addons.
 
 Addons:
 - [Sungrow WiNet S/WiNet S2 Extraction Tool](https://github.com/NickStallman/home-assistant-repo/tree/main/winet-extractor)
+
+Customisation:
+- This fork of Nick Stallamn's winet-extractor is subtly modified to ensure it doesn't clash with existing App. This was done to allow a 2nd instance to run as a docker container in HomeAssistant, therefore giving me support for 2 inverters.
